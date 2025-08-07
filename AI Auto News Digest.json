@@ -1,0 +1,271 @@
+{
+  "name": "AI Auto News Digest",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        -80
+      ],
+      "id": "b7af0c64-b73e-4207-8cb6-22d3f9a8129d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/top-headlines?sources=the-times-of-india&pageSize=5&apiKey=314c40105b1f49d19a44e3842ad9ecdc",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "India"
+            },
+            {
+              "name": "from",
+              "value": "={{ new Date().toISOString().split('T')[0] }}"
+            },
+            {
+              "name": "to",
+              "value": "={{ new Date().toISOString().split('T')[0] }}"
+            },
+            {
+              "name": "apiKey",
+              "value": "https://newsapi.org/v2/top-headlines?sources=the-times-of-india&pageSize=5&apiKey=314c40105b1f49d19a44e3842ad9ecdc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -224,
+        -80
+      ],
+      "id": "33f0c437-6ab2-47e3-b15c-699a00ff55ae",
+      "name": "Get News Headlines"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "704a07ce-6566-4404-9506-007afa5f3fb4",
+              "name": "title1",
+              "value": "={{$json[\"articles\"][0][\"title\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "61d9651c-910c-4357-9153-566b8f58fb1b",
+              "name": "desc1",
+              "value": "={{$json[\"articles\"][0][\"description\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "932f29cb-cad0-4beb-b253-5e0e8b581dda",
+              "name": "title2",
+              "value": "={{$json[\"articles\"][1][\"title\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "b422235e-bcc7-4bcb-82b9-a27d86273b88",
+              "name": "desc2",
+              "value": "={{$json[\"articles\"][1][\"description\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "f72cae53-deb8-46bf-9595-50c619d3eb0a",
+              "name": "title3",
+              "value": "={{$json[\"articles\"][2][\"title\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "9ff5a056-df9e-4490-9f39-44c5ef5f339c",
+              "name": "desc3",
+              "value": "={{$json[\"articles\"][2][\"description\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "abc29f02-2476-4142-8042-0fcf50526b8d",
+              "name": "title4",
+              "value": "={{$json[\"articles\"][3][\"title\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "b02805b8-8d4a-4f28-9b58-64202272f0eb",
+              "name": "desc4",
+              "value": "={{$json[\"articles\"][3][\"description\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "7bea3261-4c39-4f1a-9c0b-7173becd1486",
+              "name": "title5",
+              "value": "={{$json[\"articles\"][4][\"title\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "6de453c2-b8b7-41a0-838a-b11ca014191a",
+              "name": "desc5",
+              "value": "={{$json[\"articles\"][4][\"description\"]}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        16
+      ],
+      "id": "31586225-4958-47d9-9eeb-d37961934e3b",
+      "name": "Extract Titles and Descriptions"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=AIzaSyDzeLlPWMtzYey5D1YDDWHyW377FjH1DhI",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Create a brief, friendly newsletter email based on these 5 news stories:\\n\\n1. {{$json['title1']}} - {{$json['desc1']}}\\n\\n2. {{$json['title2']}} - {{$json['desc2']}}\\n\\n3. {{$json['title3']}} - {{$json['desc3']}}\\n\\n4. {{$json['title4']}} - {{$json['desc4']}}\\n\\n5. {{$json['title5']}} - {{$json['desc5']}}\\n\\nKeep it in 5 short paragraphs, one for each story. Make it engaging and clear, suitable for a daily email newsletter.\"\n        }\n      ]\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        -80
+      ],
+      "id": "baad53f5-c48c-45b5-9f32-e1471eb2aa19",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "240173111011@vgecg.ac.in",
+        "subject": "🗞️ Today's India Tech News Digest",
+        "emailType": "text",
+        "message": "={{ $json.candidates[0].content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        336,
+        16
+      ],
+      "id": "f994b866-c887-4baf-990d-f7831d574e5d",
+      "name": "Send a message",
+      "webhookId": "900d1a4c-1069-4265-bf5e-7fcf845adb66",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "zJTd9X95qemkBT3Y",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "835e1f1e-a11e-4ebc-932c-bd1984f4c217",
+              "name": "todayDate",
+              "value": "={{ new Date().toISOString().split('T')[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -384,
+        32
+      ],
+      "id": "7fdfd994-c4ab-45b3-bef8-cabac18c437c",
+      "name": "Today Date"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Today Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get News Headlines": {
+      "main": [
+        [
+          {
+            "node": "Extract Titles and Descriptions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Titles and Descriptions": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Today Date": {
+      "main": [
+        [
+          {
+            "node": "Get News Headlines",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dc3f14a1-3d60-404e-a72b-ffd2abe11c5c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "da6773c581f33a9da538067832f4250c34844feb72d9e27be24f9ff05efdaf81"
+  },
+  "id": "YuFxQI9oWJjJv5Ic",
+  "tags": []
+}
